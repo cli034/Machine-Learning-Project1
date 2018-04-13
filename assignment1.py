@@ -7,7 +7,7 @@ def histogramGraph(dataSet, starting, numAttribute):
 
     for colNum in range(dataSet.shape[1]):
         colArray = dataSet[starting:numAttribute, colNum]
-        print colArray
+        #print colArray
         min_colArray = min(colArray)
         max_colArray = max(colArray)
         binRange = float((max_colArray - min_colArray)) / int(bins)
@@ -31,9 +31,9 @@ def histogramGraph(dataSet, starting, numAttribute):
         plt.xticks(inds, X)
         plt.show()
 
-def boxplotGraph(dataSet):
+def boxplotGraph(dataSet, starting, numAttribute):
     for colNum in range(dataSet.shape[1]):
-        plt.boxplot(dataSet[colNum])
+        plt.boxplot(dataSet[starting:numAttribute, colNum])
         plt.show()
 
 userinput = raw_input("Which data set to use? (Press 1 for iris.data.txt and 2 for wine.data.txt) ")
@@ -52,7 +52,13 @@ if (userinput == "1"):
         elif (classOption == "3"):
             histogramGraph(irisData, 100, 150)
     elif (option == "2"):
-        boxplotGraph(irisData)
+        classOption = raw_input("Press 1 for Iris Setosa, 2 for Iris Versicolor, 3 for Iris Virginica: ")
+        if (classOption == "1"):
+            boxplotGraph(irisData, 0, 50)
+        elif (classOption == "2"):
+            boxplotGraph(irisData, 50, 100)
+        elif (classOption == "3"):
+            boxplotGraph(irisData, 100, 150)
 elif (userinput == "2"):
     wineData = np.loadtxt('wine.data.txt', delimiter=',', usecols=(1,2,3,4,5,6,7,8,9,10,11,12,13))
     option = raw_input("Press 1 to show histogram, and 2 for boxplot: ")
@@ -65,4 +71,10 @@ elif (userinput == "2"):
         elif (classOption == "3"):
             histogramGraph(wineData, 130, 178)
     elif (option == "2"):
-        boxplotGraph(wineData)
+        classOption = raw_input("Press 1 for Class 1, 2 for Class 2, and 3 for Class 3: ")
+        if (classOption == "1"):
+            boxplotGraph(wineData, 0, 59)
+        elif (classOption == "2"):
+            boxplotGraph(wineData, 59, 130)
+        elif (classOption == "3"):
+            boxplotGraph(wineData, 130, 178)
