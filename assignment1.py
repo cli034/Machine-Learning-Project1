@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# make histogram graph
 def histogramGraph(dataSet, starting, numAttribute):
     bins = raw_input("Number of bins: ")
     y_axis = np.zeros(int(bins)) 
@@ -31,10 +32,51 @@ def histogramGraph(dataSet, starting, numAttribute):
         plt.xticks(inds, X)
         plt.show()
 
+# make boxplot
 def boxplotGraph(dataSet, starting, numAttribute):
     for colNum in range(dataSet.shape[1]):
         plt.boxplot(dataSet[starting:numAttribute, colNum])
         plt.show()
+
+def correlation(dataSet, x, y):
+    attr1 = dataSet[0:dataSet.shape[0], x]
+    attr2 = dataSet[0:dataSet.shape[0], y]
+
+    attr1Sum = 0
+    attr1Mean = 0
+    for i in attr1:
+        attr1Sum = attr1Sum + i
+    attr1Mean = attr1Sum / dataSet.shape[0]
+    
+    attr2Sum = 0
+    attr2Mean = 0
+    for j in attr2:
+        attr2Sum = attr2Sum + j
+    attr2Mean = attr2Sum / dataSet.shape[0]
+    
+    valueX = 0
+    valueY = 0
+    sumSqrX = 0
+    sumSqrY = 0
+    resultTmp = 0
+    total = 0
+    for i in range(dataSet.shape[0]):
+        valueX = attr1[i] - attr1Mean
+        valueY = attr2[i] - attr2Mean
+        resultTmp = valueX * valueY
+        total = total + resultTmp
+
+        #for the standard deviation
+        sumSqrX = sumSqrX + (valueX ** 2)
+        sumSqrY = sumSqrY + (valueY ** 2)
+        
+    cov = total / dataSet.shape[0]
+
+    sd_x = (sumSqrX / dataSet.shape[0]) ** (0.5)
+    sd_y = (sumSqrY / dataSet.shape[0]) ** (0.5)
+
+    corrl = cov / (sd_x * sd_y)
+    print corrl
 
 userinput = raw_input("Which data set to use? (Press 1 for iris.data.txt and 2 for wine.data.txt) ")
 
@@ -61,6 +103,7 @@ if (userinput == "1"):
             boxplotGraph(irisData, 100, 150)
 elif (userinput == "2"):
     wineData = np.loadtxt('wine.data.txt', delimiter=',', usecols=(1,2,3,4,5,6,7,8,9,10,11,12,13))
+
     option = raw_input("Press 1 to show histogram, and 2 for boxplot: ")
     if (option == "1"):
         classOption = raw_input("Press 1 for Class 1, 2 for Class 2, and 3 for Class 3: ")
