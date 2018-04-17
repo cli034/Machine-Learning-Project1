@@ -95,10 +95,33 @@ def makeCorrelationMatrix(dataSet):
     return corrlMatrix
 
 def heatmap(dataSet):
+    arrayName = []
+    if (dataSet.shape[1] == 4):
+        arrayName.append("Sepal Length")
+        arrayName.append("Sepal Width")
+        arrayName.append("Petal Length")
+        arrayName.append("Petal Width")
+    elif (dataSet.shape[1] == 13):
+        arrayName.append("Alcohol")
+        arrayName.append("Malic Acid")
+        arrayName.append("Ash")
+        arrayName.append("Alcalinity of ash")
+        arrayName.append("Magnesium")
+        arrayName.append("Total phenols")
+        arrayName.append("Flavanoids")
+        arrayName.append("Nonflavanoid phenols")
+        arrayName.append("Proanthocyanins")
+        arrayName.append("Color intensity")
+        arrayName.append("Hue")
+        arrayName.append("OD280/OD315 of diluted wines")
+        arrayName.append("Proline")
+        
     temp = makeCorrelationMatrix(dataSet)
-    
+
     a = np.array(temp)
     plt.imshow(a, cmap='hot', interpolation='nearest')
+    plt.xticks(np.arange(dataSet.shape[1]), arrayName, rotation=90)
+    plt.yticks(np.arange(dataSet.shape[1]), arrayName)
     plt.colorbar()
     plt.show()
     
