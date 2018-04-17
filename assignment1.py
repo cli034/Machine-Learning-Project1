@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 
 
 # make histogram graph
+# histogram is graphed for each class
+# Question 1.1
 def histogramGraph(dataSet, starting, numAttribute):
     bins = raw_input("Number of bins: ")
     y_axis = np.zeros(int(bins)) 
@@ -34,12 +36,15 @@ def histogramGraph(dataSet, starting, numAttribute):
         plt.show()
 
 # make boxplot
+# boxplot is graphed for each class
+# Question 1.2
 def boxplotGraph(dataSet, starting, numAttribute):
     for colNum in range(dataSet.shape[1]):
         plt.boxplot(dataSet[starting:numAttribute, colNum])
         plt.show()
 
 # calculate the correlation between two features
+# Question 2.1.a
 def correlation(dataSet, x, y):
     attr1 = dataSet[0:dataSet.shape[0], x]
     attr2 = dataSet[0:dataSet.shape[0], y]
@@ -81,6 +86,8 @@ def correlation(dataSet, x, y):
     return corrl
 
 # make a 2D array based on the correlation between features
+# Feature by feature correlation matrix
+# Question 2.1.b
 def makeCorrelationMatrix(dataSet):
     corrlMatrix = []
     
@@ -94,46 +101,67 @@ def makeCorrelationMatrix(dataSet):
         corrlMatrix.append(temp)
     return corrlMatrix
 
+# make a heatmap of the Feature by feature correlation matrix
+# Question 2.1.d
 def heatmap(dataSet):
-    arrayName = []
-    if (dataSet.shape[1] == 4):
-        arrayName.append("Sepal Length")
-        arrayName.append("Sepal Width")
-        arrayName.append("Petal Length")
-        arrayName.append("Petal Width")
-    elif (dataSet.shape[1] == 13):
-        arrayName.append("Alcohol")
-        arrayName.append("Malic Acid")
-        arrayName.append("Ash")
-        arrayName.append("Alcalinity of ash")
-        arrayName.append("Magnesium")
-        arrayName.append("Total phenols")
-        arrayName.append("Flavanoids")
-        arrayName.append("Nonflavanoid phenols")
-        arrayName.append("Proanthocyanins")
-        arrayName.append("Color intensity")
-        arrayName.append("Hue")
-        arrayName.append("OD280/OD315 of diluted wines")
-        arrayName.append("Proline")
-        
     temp = makeCorrelationMatrix(dataSet)
+    if (dataSet.shape[1] == 4):
+        a = np.array(temp)
+        plt.imshow(a, cmap='hot', interpolation='nearest')
+        plt.xticks(np.arange(dataSet.shape[1]), irisFeatureName)
+        plt.yticks(np.arange(dataSet.shape[1]), irisFeatureName)
+        plt.colorbar()
+        plt.show()
+    elif (dataSet.shape[1] == 13):
+        a = np.array(temp)
+        plt.imshow(a, cmap='hot', interpolation='nearest')
+        plt.xticks(np.arange(dataSet.shape[1]), wineFeatureName, rotation=90)
+        plt.yticks(np.arange(dataSet.shape[1]), wineFeatureName)
+        plt.colorbar()
+        plt.show()
+        
+# make scatter plot for feature pairs (only for iris data)
+def scatterPlot(dataSet):
+    for i in range(dataSet.shape[1]):
+        for j in range(dataSet.shape[1]):
+            # you don't plot with the same feature
+            # you don't plot repeated pairs, thats why j is always greater than i
+            if ((i != j) and (i < j)):
+                #separate feature pairs by colors depand on its class
+                x_class1 = dataSet[0:50,i]
+                y_class1 = dataSet[0:50,j]
+                color1 = ['red']
 
-    a = np.array(temp)
-    plt.imshow(a, cmap='hot', interpolation='nearest')
-    plt.xticks(np.arange(dataSet.shape[1]), arrayName, rotation=90)
-    plt.yticks(np.arange(dataSet.shape[1]), arrayName)
-    plt.colorbar()
-    plt.show()
-    
-    
+                x_class2 = dataSet[50:100,i]
+                y_class2 = dataSet[50:100,j]
+                color2 = ['green']
+
+                x_class3 = dataSet[100:150,i]
+                y_class3 = dataSet[100:150,j]
+                color3 = ['blue']
+
+                plt.scatter(x_class1, y_class1, c=color1, s=50)
+                plt.scatter(x_class2, y_class2, c=color2, s=50)
+                plt.scatter(x_class3, y_class3, c=color3, s=50)
+
+                plt.title(irisFeatureName[i] + " VS " + irisFeatureName[j] + "\n Red - Setosa, Green - Versicolor, Blue - Virginica")
+                plt.xlabel(irisFeatureName[i])
+                plt.ylabel(irisFeatureName[j])
+                plt.show()
+
 
 userinput = raw_input("Which data set to use? (Press 1 for iris.data.txt and 2 for wine.data.txt) ")
 
 if (userinput == "1"):
     # load data set
     irisData = np.loadtxt('iris.data.txt', delimiter=',', usecols=(0, 1, 2, 3))
+    irisFeatureName = []
+    irisFeatureName.append("Sepal Length")
+    irisFeatureName.append("Sepal Width")
+    irisFeatureName.append("Petal Length")
+    irisFeatureName.append("Petal Width")
 
-    option = raw_input("Press 1 to show histogram, 2 for boxplot, 3 for correlation matrix ")
+    option = raw_input("Press 1 to show histogram, 2 for boxplot, 3 for correlation matrix, 4 for scatter plot ")
     if (option == "1"):
         classOption = raw_input("Press 1 for Iris Setosa, 2 for Iris Versicolor, 3 for Iris Virginica: ")
         if (classOption == "1"):
@@ -156,8 +184,24 @@ if (userinput == "1"):
             print (makeCorrelationMatrix(irisData))
         elif (subOption == "2"):
             heatmap(irisData)
+    elif (option == "4"):
+        scatterPlot(irisData)
 elif (userinput == "2"):
     wineData = np.loadtxt('wine.data.txt', delimiter=',', usecols=(1,2,3,4,5,6,7,8,9,10,11,12,13))
+    wineFeatureName = []
+    wineFeatureName.append("Alcohol")
+    wineFeatureName.append("Malic Acid")
+    wineFeatureName.append("Ash")
+    wineFeatureName.append("Alcalinity of ash")
+    wineFeatureName.append("Magnesium")
+    wineFeatureName.append("Total phenols")
+    wineFeatureName.append("Flavanoids")
+    wineFeatureName.append("Nonflavanoid phenols")
+    wineFeatureName.append("Proanthocyanins")
+    wineFeatureName.append("Color intensity")
+    wineFeatureName.append("Hue")
+    wineFeatureName.append("OD280/OD315 of diluted wines")
+    wineFeatureName.append("Proline")
     
     option = raw_input("Press 1 to show histogram, 2 for boxplot, 3 for correlation matrix ")
     if (option == "1"):
