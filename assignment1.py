@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 # make histogram graph
 def histogramGraph(dataSet, starting, numAttribute):
     bins = raw_input("Number of bins: ")
@@ -38,6 +39,7 @@ def boxplotGraph(dataSet, starting, numAttribute):
         plt.boxplot(dataSet[starting:numAttribute, colNum])
         plt.show()
 
+# calculate the correlation between two features
 def correlation(dataSet, x, y):
     attr1 = dataSet[0:dataSet.shape[0], x]
     attr2 = dataSet[0:dataSet.shape[0], y]
@@ -76,7 +78,31 @@ def correlation(dataSet, x, y):
     sd_y = (sumSqrY / dataSet.shape[0]) ** (0.5)
 
     corrl = cov / (sd_x * sd_y)
-    print corrl
+    return corrl
+
+# make a 2D array based on the correlation between features
+def makeCorrelationMatrix(dataSet):
+    corrlMatrix = []
+    
+    for i in range(dataSet.shape[1]):
+        temp = []
+        for j in range(dataSet.shape[1]):
+            if (i == j):
+                temp.append(1)
+            else:
+                temp.append(correlation(dataSet,i,j))
+        corrlMatrix.append(temp)
+    return corrlMatrix
+
+def heatmap(dataSet):
+    temp = makeCorrelationMatrix(dataSet)
+    
+    a = np.array(temp)
+    plt.imshow(a, cmap='hot', interpolation='nearest')
+    plt.colorbar()
+    plt.show()
+    
+    
 
 userinput = raw_input("Which data set to use? (Press 1 for iris.data.txt and 2 for wine.data.txt) ")
 
@@ -84,7 +110,7 @@ if (userinput == "1"):
     # load data set
     irisData = np.loadtxt('iris.data.txt', delimiter=',', usecols=(0, 1, 2, 3))
 
-    option = raw_input("Press 1 to show histogram, and 2 for boxplot: ")
+    option = raw_input("Press 1 to show histogram, 2 for boxplot, 3 for correlation matrix ")
     if (option == "1"):
         classOption = raw_input("Press 1 for Iris Setosa, 2 for Iris Versicolor, 3 for Iris Virginica: ")
         if (classOption == "1"):
@@ -101,10 +127,16 @@ if (userinput == "1"):
             boxplotGraph(irisData, 50, 100)
         elif (classOption == "3"):
             boxplotGraph(irisData, 100, 150)
+    elif (option == "3"):
+        subOption = raw_input("Press 1 for just correlation matrix, 2 for heatmap ")
+        if (subOption == "1"):
+            print (makeCorrelationMatrix(irisData))
+        elif (subOption == "2"):
+            heatmap(irisData)
 elif (userinput == "2"):
     wineData = np.loadtxt('wine.data.txt', delimiter=',', usecols=(1,2,3,4,5,6,7,8,9,10,11,12,13))
-
-    option = raw_input("Press 1 to show histogram, and 2 for boxplot: ")
+    
+    option = raw_input("Press 1 to show histogram, 2 for boxplot, 3 for correlation matrix ")
     if (option == "1"):
         classOption = raw_input("Press 1 for Class 1, 2 for Class 2, and 3 for Class 3: ")
         if (classOption == "1"):
@@ -121,3 +153,9 @@ elif (userinput == "2"):
             boxplotGraph(wineData, 59, 130)
         elif (classOption == "3"):
             boxplotGraph(wineData, 130, 178)
+    elif (option == "3"):
+        subOption = raw_input("Press 1 for just correlation matrix, 2 for heatmap ")
+        if (subOption == "1"):
+            print (makeCorrelationMatrix(wineData))
+        elif (subOption == "2"):
+            heatmap(wineData)
