@@ -121,6 +121,7 @@ def heatmap(dataSet):
         plt.show()
         
 # make scatter plot for feature pairs (only for iris data)
+# Question 2.2.a
 def scatterPlot(dataSet):
     for i in range(dataSet.shape[1]):
         for j in range(dataSet.shape[1]):
@@ -149,6 +150,81 @@ def scatterPlot(dataSet):
                 plt.ylabel(irisFeatureName[j])
                 plt.show()
 
+# Lp norm distance formula
+# Questio 2.3.a
+def distance(x,y,p):
+    array1 = x
+    array2 = y
+    temp = 0
+    total = 0
+    distance = 0
+
+    for i in range(len(array1)):
+        temp = abs(array1[i] - array2[i]) ** p
+        total = total + temp
+    
+    distance = total ** (float(1)/p)
+    return distance
+
+#distance when p=1
+#Question 2.3.b    
+def distance_p1(dataSet):
+    distance_p1 = []
+    for i in range(dataSet.shape[0]):
+        temp1 = []
+        for j in range(dataSet.shape[0]):
+            # do not repeat for pairs that has been comupted, if i==i means the same flower, the distance should be 0
+            flower1 = dataSet[i]
+            flower2 = dataSet[j]
+
+            temp1.append(distance(flower1,flower2,1))
+        distance_p1.append(temp1)
+    #print distance_p1
+    return distance_p1
+
+#distance when p=2
+#Queston 2.3.b
+def distance_p2(dataSet):
+    distance_p2 = []
+    for i in range(dataSet.shape[0]):
+        temp2 = []
+        for j in range(dataSet.shape[0]):
+            # do not repeat for pairs that has been comupted, if i==i means the same flower, the distance should be 0
+            flower1 = dataSet[i]
+            flower2 = dataSet[j]
+
+            temp2.append(distance(flower1,flower2,2))
+        distance_p2.append(temp2)
+    #print distance_p2
+    return distance_p2
+
+#heatmap when p=1
+#Question 2.3.d
+def distance_p1_heatmap(dataSet):
+    temp = distance_p1(dataSet)
+    #flower_num = []
+    #for i in range(dataSet.shape[0]):
+        #flower_num.append(i)
+    a = np.array(temp)
+    plt.imshow(a, cmap='hot', interpolation='nearest')
+    #plt.xticks(np.arange(dataSet.shape[0]), flower_num)
+    #plt.yticks(np.arange(dataSet.shape[0]), flower_num)
+    plt.title("Distance Heatmap for each flower, p = 1")
+    plt.colorbar()
+    plt.show()
+
+#heatmap when p=2
+#Question 2.3.d
+def distance_p2_heatmap(dataSet):
+    temp = distance_p2(dataSet)
+    a = np.array(temp)
+    plt.imshow(a, cmap='hot', interpolation='nearest')
+    #plt.xticks(np.arange(dataSet.shape[1]), irisFeatureName)
+    #plt.yticks(np.arange(dataSet.shape[1]), irisFeatureName)
+    plt.title("Distance Heatmap for each flower, p = 2")
+    plt.colorbar()
+    plt.show()
+    
 
 userinput = raw_input("Which data set to use? (Press 1 for iris.data.txt and 2 for wine.data.txt) ")
 
@@ -160,8 +236,10 @@ if (userinput == "1"):
     irisFeatureName.append("Sepal Width")
     irisFeatureName.append("Petal Length")
     irisFeatureName.append("Petal Width")
-
-    option = raw_input("Press 1 to show histogram, 2 for boxplot, 3 for correlation matrix, 4 for scatter plot ")
+    
+    #print(distance(irisData[0:irisData.shape[0], 0],irisData[0:irisData.shape[0], 1],2))
+    #print irisData[0]
+    option = raw_input("Press 1 to show histogram, 2 for boxplot, 3 for correlation matrix, 4 for scatter plot, 5 for distance matrix")
     if (option == "1"):
         classOption = raw_input("Press 1 for Iris Setosa, 2 for Iris Versicolor, 3 for Iris Virginica: ")
         if (classOption == "1"):
@@ -186,6 +264,20 @@ if (userinput == "1"):
             heatmap(irisData)
     elif (option == "4"):
         scatterPlot(irisData)
+    elif (option == "5"):
+        subOption = raw_input("Press 1 for p = 1, 2 for p = 2 ")
+        if (subOption == "1"):
+            sub_subOption = raw_input("Press 1 for matrix, 2 for heatmap ")
+            if (sub_subOption == "1"):
+                print(distance_p1(irisData))
+            elif (sub_subOption == "2"):
+                distance_p1_heatmap(irisData)
+        elif (subOption == "2"):
+            sub_subOption = raw_input("Press 1 for matrix, 2 for heatmap ")
+            if (sub_subOption == "1"):
+                print(distance_p2(irisData))
+            elif (sub_subOption == "2"):
+                distance_p2_heatmap(irisData)
 elif (userinput == "2"):
     wineData = np.loadtxt('wine.data.txt', delimiter=',', usecols=(1,2,3,4,5,6,7,8,9,10,11,12,13))
     wineFeatureName = []
@@ -203,7 +295,7 @@ elif (userinput == "2"):
     wineFeatureName.append("OD280/OD315 of diluted wines")
     wineFeatureName.append("Proline")
     
-    option = raw_input("Press 1 to show histogram, 2 for boxplot, 3 for correlation matrix ")
+    option = raw_input("Press 1 to show histogram, 2 for boxplot, 3 for correlation matrix, 4 for distance matrix ")
     if (option == "1"):
         classOption = raw_input("Press 1 for Class 1, 2 for Class 2, and 3 for Class 3: ")
         if (classOption == "1"):
@@ -226,3 +318,17 @@ elif (userinput == "2"):
             print (makeCorrelationMatrix(wineData))
         elif (subOption == "2"):
             heatmap(wineData)
+    elif (option == "4"):
+        subOption = raw_input("Press 1 for p = 1, 2 for p = 2 ")
+        if (subOption == "1"):
+            sub_subOption = raw_input("Press 1 for matrix, 2 for heatmap ")
+            if (sub_subOption == "1"):
+                print(distance_p1(wineData))
+            elif (sub_subOption == "2"):
+                distance_p1_heatmap(wineData)
+        elif (subOption == "2"):
+            sub_subOption = raw_input("Press 1 for matrix, 2 for heatmap ")
+            if (sub_subOption == "1"):
+                print(distance_p2(wineData))
+            elif (sub_subOption == "2"):
+                distance_p2_heatmap(wineData)
