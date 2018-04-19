@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 # make histogram graph
 # histogram is graphed for each class
 # Question 1.1
-def histogramGraph(dataSet, starting, numAttribute):
+def histogramGraph(dataSet, starting, numAttribute, dataSetName):
     bins = raw_input("Number of bins: ")
     y_axis = np.zeros(int(bins)) 
 
@@ -33,14 +33,16 @@ def histogramGraph(dataSet, starting, numAttribute):
         p1 = plt.bar(inds, y_axis, width)
         print X
         plt.xticks(inds, X)
+        plt.savefig(dataSetName + "_bins_" + str(bins) + "_" + str(colNum) +".png")
         plt.show()
 
 # make boxplot
 # boxplot is graphed for each class
 # Question 1.2
-def boxplotGraph(dataSet, starting, numAttribute):
+def boxplotGraph(dataSet, starting, numAttribute, dataSetName):
     for colNum in range(dataSet.shape[1]):
         plt.boxplot(dataSet[starting:numAttribute, colNum])
+        plt.savefig(dataSetName + "_" + str(colNum) + ".png")
         plt.show()
 
 # calculate the correlation between two features
@@ -111,6 +113,7 @@ def heatmap(dataSet):
         plt.xticks(np.arange(dataSet.shape[1]), irisFeatureName)
         plt.yticks(np.arange(dataSet.shape[1]), irisFeatureName)
         plt.colorbar()
+        plt.savefig("IrisData_Correlation_heatmap.png")
         plt.show()
     elif (dataSet.shape[1] == 13):
         a = np.array(temp)
@@ -118,11 +121,13 @@ def heatmap(dataSet):
         plt.xticks(np.arange(dataSet.shape[1]), wineFeatureName, rotation=90)
         plt.yticks(np.arange(dataSet.shape[1]), wineFeatureName)
         plt.colorbar()
+        plt.savefig("WineData_Correlation_heatmap.png")
         plt.show()
         
 # make scatter plot for feature pairs (only for iris data)
 # Question 2.2.a
 def scatterPlot(dataSet):
+    counter = 0
     for i in range(dataSet.shape[1]):
         for j in range(dataSet.shape[1]):
             # you don't plot with the same feature
@@ -148,6 +153,8 @@ def scatterPlot(dataSet):
                 plt.title(irisFeatureName[i] + " VS " + irisFeatureName[j] + "\n Red - Setosa, Green - Versicolor, Blue - Virginica")
                 plt.xlabel(irisFeatureName[i])
                 plt.ylabel(irisFeatureName[j])
+                plt.savefig("IrisData_ScatterPlot_" + str(counter) + ".png")
+                counter = counter + 1
                 plt.show()
 
 # Lp norm distance formula
@@ -170,14 +177,16 @@ def distance(x,y,p):
 #Question 2.3.b    
 def distance_p1(dataSet):
     distance_p1 = []
+
     for i in range(dataSet.shape[0]):
         temp1 = []
         for j in range(dataSet.shape[0]):
             # do not repeat for pairs that has been comupted, if i==i means the same flower, the distance should be 0
             flower1 = dataSet[i]
             flower2 = dataSet[j]
-
-            temp1.append(distance(flower1,flower2,1))
+            distance_temp = distance(flower1, flower2, 1)
+            temp1.append(distance_temp)
+                
         distance_p1.append(temp1)
     #print distance_p1
     return distance_p1
@@ -186,21 +195,71 @@ def distance_p1(dataSet):
 #Queston 2.3.b
 def distance_p2(dataSet):
     distance_p2 = []
+
     for i in range(dataSet.shape[0]):
         temp2 = []
         for j in range(dataSet.shape[0]):
             # do not repeat for pairs that has been comupted, if i==i means the same flower, the distance should be 0
             flower1 = dataSet[i]
             flower2 = dataSet[j]
+            distance_temp = distance(flower1, flower2, 2)
+            temp2.append(distance_temp)
 
-            temp2.append(distance(flower1,flower2,2))
         distance_p2.append(temp2)
-    #print distance_p2
     return distance_p2
+
+def nearest_pair_p1(dataSet):
+
+    distance_p1 = []
+    nearest_pair_i = 0
+    nearest_pair_j = 0
+
+    for i in range(dataSet.shape[0]):
+        temp1 = []
+        nearest_pair_i = i + 1
+        min_distance = 10000000
+        for j in range(dataSet.shape[0]):
+            # do not repeat for pairs that has been comupted, if i==i means the same flower, the distance should be 0
+            flower1 = dataSet[i]
+            flower2 = dataSet[j]
+            distance_temp = distance(flower1, flower2, 1)
+            temp1.append(distance_temp)
+            if ((distance_temp < min_distance) and (distance_temp != 0)):
+                min_distance = distance_temp
+                
+                nearest_pair_j = j + 1
+
+        print ("Distance " + str(min_distance) + " Nearest Pair: (" + str(nearest_pair_i) + ", " + str(nearest_pair_j) + ")")        
+        distance_p1.append(temp1)
+    #print distance_p1
+
+def nearest_pair_p2(dataSet):
+    distance_p2 = []
+    nearest_pair_i = 0
+    nearest_pair_j = 0
+
+    for i in range(dataSet.shape[0]):
+        temp2 = []
+        nearest_pair_i = i + 1
+        min_distance = 10000000
+        for j in range(dataSet.shape[0]):
+            # do not repeat for pairs that has been comupted, if i==i means the same flower, the distance should be 0
+            flower1 = dataSet[i]
+            flower2 = dataSet[j]
+            distance_temp = distance(flower1, flower2, 1)
+            temp2.append(distance_temp)
+            if ((distance_temp < min_distance) and (distance_temp != 0)):
+                min_distance = distance_temp
+                
+                nearest_pair_j = j + 1
+
+        print ("Distance " + str(min_distance) + " Nearest Pair: (" + str(nearest_pair_i) + ", " + str(nearest_pair_j) + ")")        
+        distance_p2.append(temp2)
+    #print distance_p1
 
 #heatmap when p=1
 #Question 2.3.d
-def distance_p1_heatmap(dataSet):
+def distance_p1_heatmap(dataSet,dataSetName):
     temp = distance_p1(dataSet)
     #flower_num = []
     #for i in range(dataSet.shape[0]):
@@ -211,11 +270,12 @@ def distance_p1_heatmap(dataSet):
     #plt.yticks(np.arange(dataSet.shape[0]), flower_num)
     plt.title("Distance Heatmap for each flower, p = 1")
     plt.colorbar()
+    plt.savefig(dataSetName + "_Distance_heatmap.png")
     plt.show()
 
 #heatmap when p=2
 #Question 2.3.d
-def distance_p2_heatmap(dataSet):
+def distance_p2_heatmap(dataSet,dataSetName):
     temp = distance_p2(dataSet)
     a = np.array(temp)
     plt.imshow(a, cmap='hot', interpolation='nearest')
@@ -223,9 +283,9 @@ def distance_p2_heatmap(dataSet):
     #plt.yticks(np.arange(dataSet.shape[1]), irisFeatureName)
     plt.title("Distance Heatmap for each flower, p = 2")
     plt.colorbar()
+    plt.savefig(dataSetName + "_Distance_heatmap.png")
     plt.show()
     
-
 userinput = raw_input("Which data set to use? (Press 1 for iris.data.txt and 2 for wine.data.txt) ")
 
 if (userinput == "1"):
@@ -239,23 +299,23 @@ if (userinput == "1"):
     
     #print(distance(irisData[0:irisData.shape[0], 0],irisData[0:irisData.shape[0], 1],2))
     #print irisData[0]
-    option = raw_input("Press 1 to show histogram, 2 for boxplot, 3 for correlation matrix, 4 for scatter plot, 5 for distance matrix")
+    option = raw_input("Press 1 to show histogram, 2 for boxplot, 3 for correlation matrix, 4 for scatter plot, 5 for distance matrix ")
     if (option == "1"):
         classOption = raw_input("Press 1 for Iris Setosa, 2 for Iris Versicolor, 3 for Iris Virginica: ")
         if (classOption == "1"):
-            histogramGraph(irisData, 0, 50)
+            histogramGraph(irisData, 0, 50, "irisData_Setosa")
         elif (classOption == "2"):
-            histogramGraph(irisData, 50, 100)
+            histogramGraph(irisData, 50, 100, "irisData_Versicolor")
         elif (classOption == "3"):
-            histogramGraph(irisData, 100, 150)
+            histogramGraph(irisData, 100, 150, "irisData_Virginica")
     elif (option == "2"):
         classOption = raw_input("Press 1 for Iris Setosa, 2 for Iris Versicolor, 3 for Iris Virginica: ")
         if (classOption == "1"):
-            boxplotGraph(irisData, 0, 50)
+            boxplotGraph(irisData, 0, 50, "irisData_Setosa")
         elif (classOption == "2"):
-            boxplotGraph(irisData, 50, 100)
+            boxplotGraph(irisData, 50, 100, "irisData_Versicolor")
         elif (classOption == "3"):
-            boxplotGraph(irisData, 100, 150)
+            boxplotGraph(irisData, 100, 150, "irisData_Virginica")
     elif (option == "3"):
         subOption = raw_input("Press 1 for just correlation matrix, 2 for heatmap ")
         if (subOption == "1"):
@@ -267,17 +327,21 @@ if (userinput == "1"):
     elif (option == "5"):
         subOption = raw_input("Press 1 for p = 1, 2 for p = 2 ")
         if (subOption == "1"):
-            sub_subOption = raw_input("Press 1 for matrix, 2 for heatmap ")
+            sub_subOption = raw_input("Press 1 for matrix, 2 for heatmap, 3 for nearest pair ")
             if (sub_subOption == "1"):
                 print(distance_p1(irisData))
             elif (sub_subOption == "2"):
-                distance_p1_heatmap(irisData)
+                distance_p1_heatmap(irisData, "irisData_p1")
+            elif (sub_subOption == "3"):
+                nearest_pair_p1(irisData)
         elif (subOption == "2"):
-            sub_subOption = raw_input("Press 1 for matrix, 2 for heatmap ")
+            sub_subOption = raw_input("Press 1 for matrix, 2 for heatmap, 3 for nearest pair ")
             if (sub_subOption == "1"):
                 print(distance_p2(irisData))
             elif (sub_subOption == "2"):
-                distance_p2_heatmap(irisData)
+                distance_p2_heatmap(irisData, "irisData_p2")
+            elif (sub_subOption == "3"):
+                nearest_pair_p2(irisData)
 elif (userinput == "2"):
     wineData = np.loadtxt('wine.data.txt', delimiter=',', usecols=(1,2,3,4,5,6,7,8,9,10,11,12,13))
     wineFeatureName = []
@@ -299,19 +363,19 @@ elif (userinput == "2"):
     if (option == "1"):
         classOption = raw_input("Press 1 for Class 1, 2 for Class 2, and 3 for Class 3: ")
         if (classOption == "1"):
-            histogramGraph(wineData, 0, 59)
+            histogramGraph(wineData, 0, 59, "wineData_class1")
         elif (classOption == "2"):
-            histogramGraph(wineData, 59, 130)
+            histogramGraph(wineData, 59, 130, "wineData_class2")
         elif (classOption == "3"):
-            histogramGraph(wineData, 130, 178)
+            histogramGraph(wineData, 130, 178, "wineData_class3")
     elif (option == "2"):
         classOption = raw_input("Press 1 for Class 1, 2 for Class 2, and 3 for Class 3: ")
         if (classOption == "1"):
-            boxplotGraph(wineData, 0, 59)
+            boxplotGraph(wineData, 0, 59, "wineData_class1")
         elif (classOption == "2"):
-            boxplotGraph(wineData, 59, 130)
+            boxplotGraph(wineData, 59, 130, "wineData_class2")
         elif (classOption == "3"):
-            boxplotGraph(wineData, 130, 178)
+            boxplotGraph(wineData, 130, 178, "wineData_class3")
     elif (option == "3"):
         subOption = raw_input("Press 1 for just correlation matrix, 2 for heatmap ")
         if (subOption == "1"):
@@ -321,14 +385,18 @@ elif (userinput == "2"):
     elif (option == "4"):
         subOption = raw_input("Press 1 for p = 1, 2 for p = 2 ")
         if (subOption == "1"):
-            sub_subOption = raw_input("Press 1 for matrix, 2 for heatmap ")
+            sub_subOption = raw_input("Press 1 for matrix, 2 for heatmap, 3 for nearest pair ")
             if (sub_subOption == "1"):
                 print(distance_p1(wineData))
             elif (sub_subOption == "2"):
-                distance_p1_heatmap(wineData)
+                distance_p1_heatmap(wineData, "wineData_p1")
+            elif (sub_subOption == "3"):
+                nearest_pair_p1(wineData)
         elif (subOption == "2"):
-            sub_subOption = raw_input("Press 1 for matrix, 2 for heatmap ")
+            sub_subOption = raw_input("Press 1 for matrix, 2 for heatmap, 3 for nearest pair ")
             if (sub_subOption == "1"):
                 print(distance_p2(wineData))
             elif (sub_subOption == "2"):
-                distance_p2_heatmap(wineData)
+                distance_p2_heatmap(wineData, "wineData_p2")
+            elif (sub_subOption == "3"):
+                nearest_pair_p2(wineData)
